@@ -1,0 +1,19 @@
+#!/bin/sh
+# Start de muziekspeler.
+# Dit script mag overal staan (ook als koppeling op je PATH); het zoekt de
+# map van de app zelf op, pakt de meegeleverde venv en start het programma.
+# Eventuele argumenten worden doorgegeven aan muziekspeler.py.
+
+# Map van dit script, ook als het een symlink is.
+DOEL="$0"
+while [ -h "$DOEL" ]; do
+    map=$(CDPATH= cd -- "$(dirname -- "$DOEL")" && pwd)
+    link=$(readlink "$DOEL")
+    case "$link" in
+        /*) DOEL="$link" ;;
+        *)  DOEL="$map/$link" ;;
+    esac
+done
+APP_MAP=$(CDPATH= cd -- "$(dirname -- "$DOEL")" && pwd)
+
+exec "$APP_MAP/.venv/bin/python" "$APP_MAP/muziekspeler.py" "$@"
