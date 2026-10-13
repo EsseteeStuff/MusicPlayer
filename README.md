@@ -104,9 +104,20 @@ onderteken opnieuw (ad-hoc volstaat voor lokaal gebruik):
 codesign --force --sign - Muziekspeler.app
 ```
 
-> Let op: de paden naar het script en de venv staan als `APP_MAP` in
-> `launcher.c`. Verhuis je het project, werk die paden dan bij en bouw de
-> launcher opnieuw.
+De launcher zoekt de projectmap (met `muziekspeler.py` en `.venv`) bij het
+starten zelf op, dus je kunt het project verhuizen zonder de bundel opnieuw te
+bouwen. De volgorde is:
+
+1. de omgevingsvariabele `MUZIEKSPELER_HOME`;
+2. het bewaarde pad in `~/Library/Application Support/Muziekspeler/home`;
+3. omhoog zoeken vanaf de bundel zelf (handig als de `.app` in het project
+   staat);
+4. `~/MusicPlayer` en `~/Projects/MusicPlayer`;
+5. je thuismap zelf en `~/Projects`;
+6. de directe submappen van je thuismap en van `~/Projects`.
+
+Het gevonden pad wordt onthouden voor de volgende start. Wil je een bepaalde
+map forceren, dan start je met `MUZIEKSPELER_HOME=/pad/naar/project`.
 
 ## Licentie
 
