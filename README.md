@@ -1,5 +1,7 @@
 # Muziekspeler
 
+**Nederlands** · [English](README_ENG.md) · [Français](README_FR.md) · [Deutsch](README_DE.md)
+
 Een muziekspeler in de stijl van [Top30](https://github.com/EsseteeStuff),
 een "Winamp-light" gebouwd met **PySide6** (Qt 6). Je opent een map met
 muziek of sleept bestanden in het venster en speelt ze af. De vormgeving is
