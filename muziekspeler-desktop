@@ -1,3 +1,13 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:15d80d875f86ddcec2b238911f060cce8560009c50f0d0f13a1bfbfa51a371a1
-size 444
+[Desktop Entry]
+# The type of the thing this desktop file refers to (e.g. can be Link)
+Type=Application
+# The application name.
+Name=Muziekspeler
+# Tooltip comment to show in menus.
+Comment=A winamp looking musicplayer.
+# The path (folder) in which the executable is run
+Path=/opt/muziekspeler
+# The executable (can include arguments)
+Exec=/opt/muziekspeler/muziekspeler
+# The icon for the entry, use the target filesystem path.
+Icon=top30.svg

@@ -1,3 +1,7 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:99d7e329937538ffe5061825c47a5765fc06a85f16a3f20bc085d965f7bb0459
-size 154
+mutagen==1.48.1
+PySide6==6.12.0
+PySide6_Addons==6.12.0
+PySide6_Essentials==6.12.0
+PySide6_Pdf==6.12.0.140
+PySide6_WebEngine==6.12.0.140
+shiboken6==6.12.0
