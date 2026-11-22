@@ -16,4 +16,5 @@ while [ -h "$DOEL" ]; do
 done
 APP_MAP=$(CDPATH= cd -- "$(dirname -- "$DOEL")" && pwd)
 
+
 exec "$APP_MAP/.venv/bin/python" "$APP_MAP/muziekspeler.py" "$@"

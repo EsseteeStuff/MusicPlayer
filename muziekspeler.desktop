@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Muziekspeler
+GenericName=Muziekspeler
+Comment=Een Winamp-light in Python, in de stijl van Top30
+Exec=/home/serge/MusicPlayer/muziekspeler
+TryExec=/home/serge/MusicPlayer/muziekspeler
+Icon=/home/serge/MusicPlayer/icon.png
+Terminal=false
+Categories=AudioVideo;Audio;Player;
+StartupWMClass=muziekspeler
+StartupNotify=true

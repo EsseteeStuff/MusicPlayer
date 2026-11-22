@@ -45,7 +45,7 @@ from PySide6.QtCore import (
     QUrl, Signal,
 )
 from PySide6.QtGui import (
-    QColor, QFontDatabase, QKeySequence, QPainter, QPen, QShortcut,
+    QColor, QFontDatabase, QIcon, QKeySequence, QPainter, QPen, QShortcut,
 )
 from PySide6.QtMultimedia import (
     QAudioDecoder, QAudioFormat, QAudioOutput, QAudioSink, QMediaPlayer,
@@ -412,6 +412,11 @@ def stijlblad(kleuren: dict) -> str:
         background: {kleuren['paneel']};
         border-bottom: 1px solid {kleuren['rand']};
     }}
+    #kop_icoon {{
+        background: {kleuren['paneel_licht']};
+        border: 1px solid {kleuren['accent']};
+        border-radius: 11px;
+    }}
     #kop_titel {{ font-size: 15pt; font-weight: 600; background: transparent; }}
     #kop_sub {{ color: {kleuren['tekst_zwak']}; font-size: 9pt; background: transparent; }}
 
@@ -582,6 +587,53 @@ MEDIA_EXTENSIES = {
 # "uit" → de afspeellijst stopt na het laatste nummer; "een" → herhaal
 # hetzelfde nummer; "alle" → de hele lijst opnieuw.
 HERHALEN_MODES = ["uit", "een", "alle"]
+
+
+# --------------------------------------------------------------------------
+# Icoon
+# --------------------------------------------------------------------------
+
+def icoon_pad(extensie: str = ".ico") -> Path:
+    """Vind het icoon in de bundel, naast de executable of naast het script.
+
+    De .ico bevat meerdere afmetingen; die heeft Qt nodig voor een goed
+    venstericoon. Een losse 512px-PNG wordt door Qt namelijk niet als
+    _NET_WM_ICON doorgegeven, waardoor de titelbalk leeg blijft.
+    """
+    bestandsnaam = f"icon{extensie}"
+    mappen = []
+    if getattr(sys, "frozen", False):
+        meipass = getattr(sys, "_MEIPASS", None)   # PyInstaller onefile
+        if meipass:
+            mappen.append(Path(meipass))
+        mappen.append(Path(sys.executable).resolve().parent)
+    mappen.append(Path(__file__).resolve().parent)
+    for basis in mappen:
+        pad = basis / bestandsnaam
+        if pad.exists():
+            return pad
+    return mappen[0] / bestandsnaam
+
+
+def zet_windows_app_id() -> None:
+    """Koppel de taakbalk aan deze app in plaats van aan een generiek icoon."""
+    if sys.platform != "win32":
+        return
+    try:
+        import ctypes
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+            "EsseteeStuff.Muziekspeler.1"
+        )
+    except Exception:
+        pass
+
+
+def laad_icoon() -> QIcon:
+    """Het applicatie-icoon, met meerdere afmetingen voor de titelbalk."""
+    pad = icoon_pad(".ico")
+    if not pad.exists():
+        pad = icoon_pad(".png")   # terugval als de .ico ontbreekt
+    return QIcon(str(pad))
 
 
 # --------------------------------------------------------------------------
@@ -1277,6 +1329,7 @@ class Muziekvenster(QMainWindow):
     def __init__(self, thema: str = "donker") -> None:
         super().__init__()
         self.setWindowTitle(t(APP_TITEL))
+        self.setWindowIcon(laad_icoon())
         self.setMinimumSize(900, 520)
         self.resize(1040, 640)
 
@@ -1327,6 +1380,11 @@ class Muziekvenster(QMainWindow):
         kop.setObjectName("kop")
         kopbalk = QHBoxLayout(kop)
         kopbalk.setContentsMargins(16, 10, 16, 10)
+        kop_icoon = QLabel()
+        kop_icoon.setObjectName("kop_icoon")
+        kop_icoon.setFixedSize(46, 46)
+        kop_icoon.setPixmap(laad_icoon().pixmap(44, 44))
+        kopbalk.addWidget(kop_icoon)
         kop_titel = QLabel(t(APP_TITEL))
         kop_titel.setObjectName("kop_titel")
         self.kop_titel = kop_titel
@@ -2077,8 +2135,16 @@ class Muziekvenster(QMainWindow):
 # --------------------------------------------------------------------------
 
 def maak_app() -> QApplication:
+    zet_windows_app_id()
     app = QApplication.instance() or QApplication(sys.argv)
-    app.setApplicationName(APP_TITEL)
+    # Op Wayland (GNOME) komt het icoon links in de titelbalk niet van
+    # setWindowIcon(), maar van het .desktop-bestand dat bij de app_id hoort.
+    # Zowel de X11-WM_CLASS als de Wayland-app_id worden "muziekspeler".
+    app.setApplicationName("muziekspeler")
+    app.setApplicationDisplayName(APP_TITEL)
+    app.setOrganizationName("EsseteeStuff")
+    app.setDesktopFileName("muziekspeler")
+    app.setWindowIcon(laad_icoon())
     return app
 
 

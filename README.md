@@ -62,6 +62,66 @@ Of rechtstreeks met Python:
 .venv/bin/python muziekspeler.py
 ```
 
+## Het icoon van de applicatie
+
+`icon.png` en `icon.ico` worden opnieuw gemaakt met:
+
+```sh
+python3 maak_icoon.py
+```
+
+- **`setWindowIcon()`** in `muziekspeler.py` geeft het venster zijn icoon. Op
+  Windows en X11 verschijnt het daarmee links in de titelbalk. Qt heeft daar
+  een `.ico` met meerdere afmetingen nodig; `laad_icoon()` laadt daarom
+  `icon.ico` en gebruikt `icon.png` alleen als terugval en voor de kopbalk.
+- **Op GNOME/Wayland** gebruikt de titelbalk echter het icoon uit het
+  `.desktop`-bestand dat bij de app_id hoort. Daarom roept de app
+  `setDesktopFileName("muziekspeler")` aan en levert dit project
+  `muziekspeler.desktop` met `StartupWMClass=muziekspeler`. Zonder dat bestand
+  toont GNOME een generiek grijs tandwiel.
+- Installeer of vernieuw dat bestand (ook na een PyInstaller-build) met:
+
+  ```sh
+  python3 installeer_desktop.py
+  python3 installeer_desktop.py --exe dist/Muziekspeler
+  ```
+
+  Het bestand komt in `~/.local/share/applications/` terecht; meld je daarna
+  even uit en weer in als GNOME het icoon niet direct opfrist.
+
+In de app zelf staat het icoon ook links in de kopbalk, naast de titel.
+
+## Standalone executable (PyInstaller)
+
+Bouw de losse applicatie met één van de meegeleverde scripts:
+
+```bat
+bouw_windows.bat    REM -> dist\Muziekspeler.exe
+```
+
+```sh
+./bouw_linux.sh     # -> dist/Muziekspeler
+```
+
+`bouw_linux.sh` roept `installeer_desktop.py` automatisch aan. Handmatig
+(let op het scheidingsteken in `--add-data`: `;` op Windows, `:` op
+Linux/macOS):
+
+```sh
+pyinstaller --noconfirm --clean --onefile --windowed \
+    --name Muziekspeler \
+    --icon icon.ico \
+    --add-data "icon.png:." \
+    --add-data "icon.ico:." \
+    muziekspeler.py
+```
+
+`--icon` bepaalt het bestandsicoon; `--add-data` zorgt dat beide iconen in de
+onefile-bundel zitten. Qt gebruikt de `.ico` met meerdere afmetingen voor het
+venstericoon — een losse 512px-PNG werkt daar niet voor. Op Windows zorgt de
+AppUserModelID in `muziekspeler.py` er bovendien voor dat de taakbalk de app als
+eigen groep toont.
+
 ## Sneltoetsen
 
 | Toets        | Actie                         |
